@@ -7,6 +7,7 @@ import flask
 
 from .abc import Microservice
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
 
 
 class RandomForestMicroservice(Microservice):
@@ -23,7 +24,7 @@ class RandomForestMicroservice(Microservice):
         clf.fit(np.array(data['train']), np.array(data['test']))
 
         self.save(clf)
-        return {'status': 'done'}
+        return {'status': 'done', 'accuracy': accuracy_score(np.array(data['test']), clf.predict(data['train']))}
 
     def endpoint_predict(self, data: Dict[str, Any]):
         if data['command'] != 'predict':
