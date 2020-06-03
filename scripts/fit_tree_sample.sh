@@ -5,6 +5,6 @@ curl --location --request POST 'http://localhost:8080/microservice/RandomForestM
 --data-raw '{
 	"command": "fit",
 	"config": {"max_depth": 3},
-	"train": [[1, 2, 3], [1, 3, 4]],
-	"test": [0, 1]
+	"features": [[1, 2, 3], [1, 3, 4]],
+	"target": [0, 1]
 }'

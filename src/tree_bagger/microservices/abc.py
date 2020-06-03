@@ -1,4 +1,7 @@
+import json
 from typing import Dict
+
+import flask
 
 
 class Microservice:
@@ -15,3 +18,6 @@ class Microservice:
             }
             for attr in endpoints
         ]
+
+    def load_data(self):
+        return json.loads(flask.request.data.decode())

@@ -1,9 +1,6 @@
-import json
 import pickle
 from typing import Any, Dict
 import numpy as np
-
-import flask
 
 from .abc import Microservice
 from sklearn.tree import DecisionTreeClassifier
@@ -16,18 +13,18 @@ class RandomForestMicroservice(Microservice):
         self._endpoints = []
 
     def endpoint_fit(self) -> Dict[str, Any]:
-        data = json.loads(flask.request.data.decode())
+        data = self.load_data()
         if data['command'] != 'fit':
             raise ValueError('Command fit is not in config')
 
         clf = DecisionTreeClassifier(**data.get('config', {}))
-        clf.fit(np.array(data['train']), np.array(data['test']))
+        clf.fit(np.array(data['X']), np.array(data['y']))
 
         self.save(clf)
-        return {'status': 'done', 'accuracy': accuracy_score(np.array(data['test']), clf.predict(data['train']))}
+        return {'status': 'done', 'accuracy': accuracy_score(np.array(data['y']), clf.predict(data['X']))}
 
     def endpoint_predict(self):
-        data = json.loads(flask.request.data.decode())
+        data = self.load_data()
         if data['command'] != 'predict':
             raise ValueError('Command predict is not in config')
         clf = self.load()
