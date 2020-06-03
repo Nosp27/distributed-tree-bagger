@@ -1,6 +1,6 @@
 import json
-from typing import Any, Dict, List
 import logging
+
 import flask
 from werkzeug import exceptions
 
@@ -8,12 +8,13 @@ from tree_bagger import Microservice
 
 
 class FlaskLayer:
-    def __init__(self):
+    def __init__(self, config='../../deploy.json'):
         logging.basicConfig(level='DEBUG')
         self.logger = logging.getLogger(self.__class__.__name__)
         self.app = flask.Flask(__name__)
 
         self.endpoints = {}
+        self.config = config
 
         self.app.add_url_rule('/deploy', 'deploy', self.deploy)
         self.app.add_url_rule(
@@ -26,7 +27,7 @@ class FlaskLayer:
         if self.endpoints:
             return {'status': 'already deployed'}
 
-        with open('../../deploy.json', 'r') as config_file:
+        with open(self.config, 'r') as config_file:
             config = json.load(config_file)
 
         microservice_cls, *_ = [
