@@ -26,18 +26,19 @@ class RandomForestMicroservice(Microservice):
         self.save(clf)
         return {'status': 'done', 'accuracy': accuracy_score(np.array(data['test']), clf.predict(data['train']))}
 
-    def endpoint_predict(self, data: Dict[str, Any]):
+    def endpoint_predict(self):
+        data = json.loads(flask.request.data.decode())
         if data['command'] != 'predict':
             raise ValueError('Command predict is not in config')
         clf = self.load()
-        return clf.predict(data['matrix'])
+        return {'predict': clf.predict(data['data']).tolist()}
 
     def save(self, model):
         with open('./data/clf.pkl', 'wb') as f:
             pickle.dump(model, f)
 
     def load(self):
-        with open('./data/clf.pkl', 'r') as f:
+        with open('./data/clf.pkl', 'rb') as f:
             return pickle.load(f)
 
 
