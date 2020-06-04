@@ -5,13 +5,9 @@ from tree_bagger.microservices.random_forest import RandomForestMicroservice
 from tree_bagger.middleware.flask_layer import FlaskLayer
 
 
-def start():
-    flask_layer = FlaskLayer()
-    waitress.serve(flask_layer.app)
+def start_flask(config=None):
+    return FlaskLayer(config).app
 
 
-__all__ = ['start']
-
-
-if __name__ == "__main__":
-    start()
+def start(config=None):
+    waitress.serve(start_flask(config))
