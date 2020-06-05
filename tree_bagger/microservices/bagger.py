@@ -38,7 +38,7 @@ class BaggerMicroservice(Microservice):
 
             data_for_predict = data.copy()
             data_for_predict['data'] = np.array(data['data'])[:, features].tolist()
-            logging.debug('Prepared data: %s' % data_for_predict['data'])
+            logging.debug('Prepared data: %s' % data_for_predict['data'][:10])
 
             resp = requests.post(child['host'] + '/microservice/endpoint_predict', data=json.dumps(data_for_predict))
             resp.raise_for_status()
@@ -46,6 +46,6 @@ class BaggerMicroservice(Microservice):
             predicts.append(resp.json()['predict'])
             logging.debug('Parsed predict')
         predicts = np.array(predicts)
-        bagged_result = predicts.mean(axis=0).round().tolist()
+        bagged_result = predicts.mean(axis=0).tolist()
 
         return {'result': bagged_result}

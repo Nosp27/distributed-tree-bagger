@@ -29,9 +29,15 @@ class SplitterMicroservice(Microservice):
             # TODO: send alerts
 
         assert X.shape[1] >= n_features
+        if data.get('nosplit') == 1:
+            split = [[i for i in range(X.shape[1])] for _ in range(n_trees)]
+        else:
+            split = [np.random.choice(X.shape[1] - 1, n_features, replace=False).tolist() for _ in range(n_trees)]
 
-        split = [np.random.choice(X.shape[1] - 1, n_features, replace=False).tolist() for _ in range(n_trees)]
-        samples = [np.random.choice(X.shape[0], n_samples) for _ in range(n_trees)]
+        if data.get('nosample') == 1:
+            samples = [[i for i in range(X.shape[0])] for _ in range(n_trees)]
+        else:
+            samples = [np.random.choice(X.shape[0], n_samples) for _ in range(n_trees)]
 
         if data.get('inplace'):
             return {'split': split}
@@ -57,7 +63,7 @@ class SplitterMicroservice(Microservice):
         X = np.array(data['X'])
         y = np.array(data['y'])
 
-        logging.debug('samples: %s, split: %s' % (samples, split))
+        # logging.debug('samples: %s, split: %s' % (samples, split))
 
         sended_data = {
             'config': data['config'],
@@ -70,6 +76,6 @@ class SplitterMicroservice(Microservice):
         if 'model_name' in data:
             sended_data['model_name'] = data['model_name']
 
-        logging.debug('sending: %s' % sended_data)
+        # logging.debug('sending: %s' % sended_data)
 
         return sended_data
