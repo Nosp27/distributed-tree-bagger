@@ -3,6 +3,8 @@ import logging
 import requests
 import flask
 import os
+
+from flask_cors import CORS
 from werkzeug import exceptions
 
 from tree_bagger import Microservice
@@ -15,6 +17,7 @@ class FlaskLayer:
         logging.basicConfig(level='DEBUG')
         self.logger = logging.getLogger(self.__class__.__name__)
         self.app = flask.Flask(__name__)
+        cors = CORS(self.app, resources={r"/*": {"origins": "*"}})
 
         self.port = None
         self.endpoints = {}
