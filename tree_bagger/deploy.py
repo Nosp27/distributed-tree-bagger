@@ -4,7 +4,7 @@ import requests
 from time import sleep
 
 
-def deploy():
+def deploy(*, sleep_time=2):
     os.environ['master_node'] = 'http://localhost:8080'
     with open('deploy.json') as f:
         config = json.loads(f.read())
@@ -18,7 +18,7 @@ def deploy():
         port = service['port']
         os.system(f'nohup python -m tree_bagger {port} > out{port}.log &')
 
-    sleep(2)
+    sleep(sleep_time)
 
     requests.get(os.environ['master_node'] + '/deploy?type=MasterNode&port=8080').raise_for_status()
 

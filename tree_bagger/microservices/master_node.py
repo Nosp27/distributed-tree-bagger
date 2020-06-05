@@ -15,19 +15,28 @@ class MasterNode(Microservice):
         self.nodes = []
 
     def endpoint_register(self) -> Dict[str, Any]:
-        self.nodes.append((request.args['type'], 'http://'+request.args['address']))
+        self.nodes.append({'type': request.args['type'], 'host': 'http://' + request.args['address']})
         return {'status': 'registered'}
 
     def endpoint_resolve(self) -> Dict[str, Any]:
         ms_type = request.args['type']
         n = int(request.args.get('n', 0))
-        ret_list = [{'host': h[1]} for h in self.nodes if h[0] == ms_type]
+        ret_list = [{'host': h['host']} for h in self.nodes if h[0] == ms_type]
         if n:
             ret_list = ret_list[:n]
         return {'nodes': ret_list}
 
     def endpoint_all(self):
         return {'nodes': self.nodes}
+
+    def endpoint_healthy(self):
+        final_nodes = []
+        for node in self.nodes:
+            resp = requests.get(node['host']+'/check')
+            if resp.status_code == 200 and resp.json()['status'] == 'healthy':
+                final_nodes.append(node)
+
+        return {'healthy_nodes': final_nodes}
 
     def endpoint_health(self) -> Dict[str, Any]:
         self.health_check_event.wait()
