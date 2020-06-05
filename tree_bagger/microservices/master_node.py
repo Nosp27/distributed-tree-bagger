@@ -32,24 +32,29 @@ class MasterNode(Microservice):
     def endpoint_healthy(self):
         final_nodes = []
         for node in self.nodes:
-            resp = requests.get(node['host']+'/check')
-            if resp.status_code == 200 and resp.json()['status'] == 'healthy':
-                final_nodes.append(node)
+            try:
+                resp = requests.get(node['host'] + '/check')
+                if resp.status_code == 200 and resp.json()['status'] == 'healthy':
+                    final_nodes.append(node)
+            except:
+                pass
 
         return {'healthy_nodes': final_nodes}
 
-    def endpoint_health(self) -> Dict[str, Any]:
-        self.health_check_event.wait()
-        return {'health': self.health}
 
-    async def hc(self):
-        while True:
-            self.health_check_event.set()
-            for _, host in self.nodes:
-                try:
-                    x = json.loads(requests.get('%s/%s' % (host, 'check')), timeout=0.1)['status']
-                except Exception:
-                    x = None
-                self.health[host] = x
-            self.health_check_event.clear()
-            await asyncio.sleep(5)
+def endpoint_health(self) -> Dict[str, Any]:
+    self.health_check_event.wait()
+    return {'health': self.health}
+
+
+async def hc(self):
+    while True:
+        self.health_check_event.set()
+        for _, host in self.nodes:
+            try:
+                x = json.loads(requests.get('%s/%s' % (host, 'check')), timeout=0.1)['status']
+            except Exception:
+                x = None
+            self.health[host] = x
+        self.health_check_event.clear()
+        await asyncio.sleep(5)
