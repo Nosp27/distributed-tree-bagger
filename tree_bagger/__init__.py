@@ -6,8 +6,8 @@ from tree_bagger.middleware.flask_layer import FlaskLayer
 
 
 def start_flask(config=None):
-    return FlaskLayer(config).app
+    return FlaskLayer(config=config).app
 
 
-def start(config=None):
-    waitress.serve(start_flask(config))
+def start(*, port=8080, config=None):
+    waitress.serve(start_flask(config), port=port)

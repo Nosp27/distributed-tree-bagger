@@ -1,3 +1,18 @@
-{
-  "microservice_cls": "RandomForestMicroservice"
-}
+[
+  {
+    "microservice_cls": "RandomForestMicroservice",
+    "port": 8081
+  },
+  {
+    "microservice_cls": "RandomForestMicroservice",
+    "port": 8082
+  },
+  {
+    "microservice_cls": "BaggerMicroservice",
+    "port": 8083
+  },
+  {
+    "microservice_cls": "SplitterMicroservice",
+    "port": 8084
+  }
+]

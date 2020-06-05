@@ -1,4 +1,4 @@
-curl --location --request POST 'http://localhost:8080/microservice/RandomForestMicroservice/endpoint_fit' \
+curl --location --request POST 'http://localhost:8084/microservice/RandomForestMicroservice/endpoint_fit' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
 --header 'Content-Type: application/json' \

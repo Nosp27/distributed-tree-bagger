@@ -1,13 +1,11 @@
 import json
-from typing import Dict
-
+import logging
+import os
 import flask
+import requests
 
 
 class Microservice:
-    def __init__(self, dependencies: Dict[str, str] = None):
-        self.dependencies = dependencies or {}
-
     def get_endpoints(self):
         endpoints = [attr for attr in dir(self) if attr.startswith('endpoint')]
         return [
@@ -20,4 +18,14 @@ class Microservice:
         ]
 
     def load_data(self):
-        return json.loads(flask.request.data.decode())
+        logging.debug('Recieved: %s' % flask.request.data)
+        return json.loads(flask.request.data)
+
+    def get_nodes_of_type(self, node_type, n=0):
+        resp = requests.get(
+                '%s/microservice/%s?type=%s&n=%s' % (os.environ['master_node'], 'endpoint_resolve', node_type, n), timeout=0.1
+            )
+        resp.raise_for_status()
+        return json.loads(
+            resp.content
+        )['nodes']
