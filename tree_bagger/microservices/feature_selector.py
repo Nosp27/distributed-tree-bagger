@@ -9,7 +9,7 @@ from .abc import Microservice
 
 
 class SplitterMicroservice(Microservice):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self._endpoints = []
 
@@ -64,6 +64,7 @@ class SplitterMicroservice(Microservice):
             'command': 'fit',
             'X': X[samples][:, split].tolist(),
             'y': y[samples].tolist(),
+            'features': split,
         }
 
         if 'model_name' in data:

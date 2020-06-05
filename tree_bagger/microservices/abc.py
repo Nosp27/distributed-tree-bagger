@@ -21,6 +21,10 @@ class Microservice:
         logging.debug('Recieved: %s' % flask.request.data)
         return json.loads(flask.request.data)
 
+    def load_queryargs(self):
+        logging.debug('Recieved Queryargs: %s' % flask.request.args)
+        return flask.request.args
+
     def get_nodes_of_type(self, node_type, n=0):
         resp = requests.get(
                 '%s/microservice/%s?type=%s&n=%s' % (os.environ['master_node'], 'endpoint_resolve', node_type, n), timeout=0.1

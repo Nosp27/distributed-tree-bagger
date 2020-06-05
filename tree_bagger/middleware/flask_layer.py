@@ -16,6 +16,7 @@ class FlaskLayer:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.app = flask.Flask(__name__)
 
+        self.port = None
         self.endpoints = {}
         self.master_node = None
         self.config = config or 'deploy.json'
@@ -33,13 +34,16 @@ class FlaskLayer:
         if self.endpoints:
             return {'status': 'already deployed'}
 
+        logging.debug('Deploying')
+
         self.master_node = os.environ['master_node']
         cls_name = flask.request.args['type']
-        print(cls_name)
+        logging.debug('port: %s', flask.request.args.get('port'))
+        self.port = flask.request.args['port']
         self.logger.debug(cls_name)
         microservice_cls = [c for c in Microservice.__subclasses__() if c.__name__ == cls_name][0]
 
-        microservice_instance = microservice_cls()
+        microservice_instance = microservice_cls(port=self.port)
         if cls_name != 'MasterNode':
             resp = requests.get('%s/%s?type=%s&address=%s' % (
                 self.master_node, 'microservice/endpoint_register', microservice_cls.__name__, flask.request.host

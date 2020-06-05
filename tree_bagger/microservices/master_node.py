@@ -8,7 +8,7 @@ from threading import Event
 
 
 class MasterNode(Microservice):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.health = []
         self.health_check_event = Event()
