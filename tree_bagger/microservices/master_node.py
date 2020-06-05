@@ -21,7 +21,7 @@ class MasterNode(Microservice):
     def endpoint_resolve(self) -> Dict[str, Any]:
         ms_type = request.args['type']
         n = int(request.args.get('n', 0))
-        ret_list = [{'host': h['host']} for h in self.nodes if h[0] == ms_type]
+        ret_list = [{'host': h['host']} for h in self.nodes if h['type'] == ms_type and self.check_node(h['host'])]
         if n:
             ret_list = ret_list[:n]
         return {'nodes': ret_list}
@@ -32,14 +32,18 @@ class MasterNode(Microservice):
     def endpoint_healthy(self):
         final_nodes = []
         for node in self.nodes:
-            try:
-                resp = requests.get(node['host'] + '/check')
-                if resp.status_code == 200 and resp.json()['status'] == 'healthy':
-                    final_nodes.append(node)
-            except:
-                pass
+            if self.check_node(node['host']):
+                final_nodes.append(node)
 
         return {'healthy_nodes': final_nodes}
+
+    def check_node(self, node_host):
+        try:
+            resp = requests.get(node_host + '/check')
+            if resp.status_code == 200 and resp.json()['status'] == 'healthy':
+                return True
+        except:
+            return False
 
 
 def endpoint_health(self) -> Dict[str, Any]:
